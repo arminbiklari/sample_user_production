@@ -15,7 +15,7 @@ def create_user_db(database_name="Users", host="localhost", password="QWEr!@#4",
         cnx.close()
         print("Database {} created successfully.".format(database_name))
     except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_DB_CREATE_EXISTS:
+        if err.msg.find("database exists") > 0:
             print("already exists.")
         else:
             print(err.msg)
@@ -28,9 +28,9 @@ def create_user_table(database_name="Users", host="localhost", password="QWEr!@#
         cnx.close()
         print("Table users created successfully.")
     except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:    #Table already exists
+        if err.msg.find("Table users already exists") > 0:
             print("already exists.")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:    #Database does not exist
+        elif err.msg.find("Database does not exist") > 0:
             print("Database does not exist")
             create_user_db()
             create_user_table()

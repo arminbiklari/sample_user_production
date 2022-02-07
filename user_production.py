@@ -39,7 +39,7 @@ class User:
     def user_last_login(self):
         """
         this method for generate user_last_login"""
-        self.__user_last_login = datetime.datetime.now()
+        self.user_last_login = datetime.datetime.now()
         return self.user_last_login
  
 class Product:

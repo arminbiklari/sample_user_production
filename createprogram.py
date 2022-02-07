@@ -4,6 +4,8 @@ from mysql.connector import connect
 import mysql.connector
 from helps  import *
 from database import *
+import os, sys
+
 
 while True:
     """
@@ -25,14 +27,14 @@ while True:
         person = User(username, Email, type)
         print(f"your username is {person.user_name} and your email is {person.user_email} and you are {person.user_type}")
         print(f"your password is {person.user_password} \t keep it safe !")
-        print(f"this account created at {person.user_created_at}")
         try:    
-            connector = connect(host='localhost', database='users', user='root', password='QWEr!@#4')
+            connector = connect(host='localhost', database='Users', user='root', password='QWEr!@#4')
             cursor = connector.cursor()
-            cursor.execute("""INSERT INTO users (user_name, user_email, user_type, user_password, user_created_at) VALUES (%s, %s, %s, %s, %s)""", (person.user_name, person.user_email, person.user_type, person.user_password, person.user_created_at))
+            cursor.execute("""INSERT INTO users (user_name, user_email, user_type, user_password, user_created_at, user_last_login, is_enable) VALUES (%s, %s, %s, %s, %s, %s, %s)""", (person.user_name, person.user_email, person.user_type, person.user_password, person.user_created_at, person.user_last_login, person.is_enable))
             connector.commit()
             connector.close()
             print("user created successfully")
+            print(f"this account created at {person.user_created_at}")
         except mysql.connector.Error as err:
             if err.msg.find("Duplicate entry") != -1:
                 print("user already exists")
@@ -46,6 +48,11 @@ while True:
             elif err.msg.find("Table does not exist") != -1:
                 create_user_table()
                 continue
+            elif err.msg.find("Unknown database") != -1:
+                print("Database does not exist")
+                create_user_db()
+                create_user_table()
+                continue
             else:
                 print(err.msg)
                 continue
@@ -53,10 +60,14 @@ while True:
             print("press Enter to continue")
             input()
             continue
-        elif str(input("do you want to continue? (y/n): ")).lower() == "n":
-            print("press Enter to exit")
-            input()
-            break
+        else:
+            if str(input("do you want to continue? (y/n): ")).lower() == "n":
+                print("press Enter to exit")
+                input()
+                break
+            else:
+                print("please enter a valid input")
+                continue
     elif choise == "2":
         Help_create_product()
         try: 
@@ -84,7 +95,7 @@ while True:
                 print("product already exists")
             elif err.msg.find("Incorrect string value") != -1:
                 print("Please enter a valid string")
-            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:  
                 print("Database does not exist")
                 create_product_db()
                 create_table_product()
@@ -164,7 +175,7 @@ while True:
                 print(result)
             elif result == []:
                 print("product not found")
-        except mysql.connector.Error as err:
+        except mysql.connector.Error as err:     #if database does not exist
             print(err.msg)
             continue
         if str(input("do you want to continue? (y/n): ")).lower() == "y":
@@ -184,3 +195,4 @@ while True:
     else:
         print("bad input !!")
         continue
+
