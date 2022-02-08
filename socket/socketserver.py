@@ -15,17 +15,16 @@ def TCP_listener(host="127.0.0.1", port=1234):
                     time = datetime.datetime.now().strftime(("%H:%M:%S"))
                     print(f"{time} coonected by : {addr}")
                     data = conn.recv(1024)
-                    return data
                     if not data:
                         continue
+                    return data
     except socket.error as msg:
         if socket.error == "Address already in use":
             print("Address already in use !!!")
 if __name__ == "__main__":
     data = TCP_listener()
     data = data.decode("utf-8")
-    data1 = json.loads(data)
-    print(type(data1))
+    print(type(data))
     print(data)
     # data = dict(data)
     # for key, value in json.loads(data).items():
